@@ -1,0 +1,96 @@
+--Create Database InterviewTracker
+​
+CREATE TABLE PositionStatus (
+    PositionStatusID INT PRIMARY KEY,
+    Status VARCHAR(50),
+   );
+   insert into PositionStatus values(1,'open'),(2,'close')
+   select * from PositionStatus
+CREATE TABLE Position (
+    PositionID INT IDENTITY(101,1) PRIMARY KEY,
+    PositionName VARCHAR(50),
+    PositionStatusID INT,
+    CONSTRAINT FK_PositionStatus FOREIGN KEY (PositionStatusID) REFERENCES PositionStatus(PositionStatusID)
+);
+ insert into Position values('Jr.Software Developer',1),('Sr.Software Developer',1),('Tester',1),('Project Manager',1)
+​
+​
+--To know what all interview steps are there for a particular position, you can join the Candidate table with the InterviewSteps table using the PositionId column. Here's an example query that retrieves the interview steps for a candidate with CandidateId 1:
+--SELECT i.StepName
+--FROM Candidate c
+--JOIN InterviewSteps i ON c.PositionId = i.PositionId
+--WHERE c.CandidateId = 1
+--ORDER BY i.StepOrder;
+​
+CREATE TABLE InterviewSteps (
+    InterviewStepID INT PRIMARY KEY,
+	PositionId int,
+    StepName VARCHAR(50),
+	StepOrder int
+	CONSTRAINT FK_Position FOREIGN KEY (PositionId) REFERENCES Position(PositionID)
+);
+ insert into InterviewSteps values(1,101,'L1 Technical',1),(2,101,'L2 Technical',2),(3,101,'HR Interview',3),
+                                  (4,102,'L2 Technical',1),(5,102,'L3 PM Interview',2),(6,102,'Client Interview',3),(7,102,'HR Interview',4),
+								  (8,103,'L1 Technical',1),(9,103,'L2 Technical',2),(10,103,'HR Interview',3),
+								  (11,104,'L2 Technical',1),(12,104,'L3 PM Interview',2),(13,104,'Client Interview',3),(14,104,'HR Interview',4)
+								  select * from InterviewSteps
+CREATE TABLE Interview (
+--this tbl is used to create interviewid for a position if applied and this will give us the details of interviewsteps for that particular interviewID
+--we have to create a sp to generate interviewID ,to knw all the interwsteps 
+--To know what all interview steps are there for a particular position, you can join the Candidate table with the InterviewSteps table using the PositionId column. Here's an example query that retrieves the interview steps for a candidate with CandidateId 1:
+--SELECT i.StepName
+--FROM Candidate c
+--JOIN InterviewSteps i ON c.PositionId = i.PositionId
+--WHERE c.CandidateId = 1
+--ORDER BY i.StepOrder;
+--NOT SURE CHECK LOGIC WHILE CREATING SP
+    InterviewID INT PRIMARY KEY, --if they apply for a position it shd auto generate  
+    PositionID INT,
+    InterviewStepID int
+    CONSTRAINT FK_PositionID FOREIGN KEY (PositionID) REFERENCES Position(PositionID),
+	CONSTRAINT FK_InterviewStepID FOREIGN KEY (InterviewStepID) REFERENCES InterviewSteps(InterviewStepID)
+);
+​
+​
+CREATE TABLE CandidateStatus (
+    StatusId INT PRIMARY KEY,
+    Status VARCHAR(50)
+); 
+​
+​
+insert into CandidateStatus values(1,'Shortlisted'),
+                                  (2,'Profile Not Suitable'),
+								  (3,'L1 Selected'),
+								  (4,'L1 Rejected'),
+								  (5,'L2 Selected'),
+								  (6,'L2 Rejected'),
+								  (7,'L3 Selected'),
+								  (8,'L3 Rejected'),
+								  (9,'Client Selected'),
+								  (10,'Client Rejected'),
+								  (11,'HR Selected'),
+								  (12,'HR Rejected'),
+								  (13,'Offer Selected'),
+								  (14,'Offer Rejected'),
+								  (15,'Joined'),
+								  (16,'Has Applied')
+								  select * from CandidateStatus
+​
+CREATE TABLE Candidate (
+    CandidateID INT PRIMARY KEY, --should auto generate create a sp
+    InterviewID INT,
+	PositionID INT,
+    FullName VARCHAR(50),
+    ContactNumber VARCHAR(20),
+    EmailID VARCHAR(50),
+    IsInternal BIT,
+    Resume VARCHAR(100),
+    YearsOfExperience INT,
+    PrimarSkills VARCHAR(100),
+    StatusID INT,
+    IsShortlisted BIT,
+    CONSTRAINT FK_InterviewID FOREIGN KEY (InterviewID) REFERENCES Interview(InterviewID),
+	CONSTRAINT FK_PositionIDs FOREIGN KEY (PositionID) REFERENCES Position(PositionID),
+    CONSTRAINT FK_CandidateStatus FOREIGN KEY (StatusID) REFERENCES CandidateStatus(StatusId),
+    CONSTRAINT UQ_Candidate UNIQUE (FullName, ContactNumber, PositionID)
+);
