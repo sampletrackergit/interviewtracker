@@ -1,0 +1,25 @@
+ALTER PROCEDURE AddPosition
+    @PositionName VARCHAR(50),
+    @PositionStatusID INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+​
+    -- Check if the PositionStatusID exists in the PositionStatus table
+    IF NOT EXISTS (SELECT 1 FROM PositionStatus WHERE PositionStatusID = @PositionStatusID)
+    BEGIN
+        RAISERROR('Invalid PositionStatusID', 16, 1);
+        RETURN;
+    END;
+​
+    -- Insert the new position into the Position table
+    INSERT INTO Position (PositionName, PositionStatusID)
+    VALUES (@PositionName, @PositionStatusID);
+​
+    
+​
+    
+END
+​
+--EXEC AddPosition 'Trainee Software Developer', 1;
+--select * from Position
