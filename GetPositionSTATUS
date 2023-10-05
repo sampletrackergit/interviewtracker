@@ -1,0 +1,22 @@
+USE [InterviewTracker]
+GO
+/****** Object:  StoredProcedure [dbo].[GetPositionSTATUS]    Script Date: 10/5/2023 11:08:47 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[GetPositionSTATUS]
+	-- Add the parameters for the stored procedure here
+	@positionID int
+		
+As
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SELECT ps.Status from Position p
+	JOIN PositionStatus ps ON p.PositionStatusID=ps.PositionStatusID
+	Where p.PositionID=@positionID;
+	
+END
