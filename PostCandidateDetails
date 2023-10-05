@@ -1,0 +1,53 @@
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+Alter PROCEDURE PostCandidateDetails 
+	-- Add the parameters for the stored procedure here
+	--@CandidateID int output,
+	@InterviewID INT,
+	@PositionID INT,
+    @FullName VARCHAR(50),
+    @ContactNumber VARCHAR(20),
+    @EmailID VARCHAR(50),
+    @IsInternal BIT,
+    @Resume VARCHAR(100),
+    @YearsOfExperience INT,
+    @PrimarySkills VARCHAR(100),
+    @StatusID INT,
+    @IsShortlisted BIT
+	
+
+AS
+BEGIN
+	--Generates random -5digts number for candidateID
+	Declare @CandidateID int=FLOOR(RAND()*(99999-10000+1)+10000);
+
+    -- Insert candidate details into candidate tbl
+	insert into Candidate(CandidateID,InterviewID,PositionID,FullName,ContactNumber,EmailID,IsInternal,Resume,YearsOfExperience,PrimarySkills,StatusID,IsShortlisted)
+	Values(@CandidateID,@InterviewID ,
+	@PositionID , @FullName ,@ContactNumber,@EmailID,@IsInternal,@Resume,
+    @YearsOfExperience,@PrimarySkills,@StatusID,@IsShortlisted);
+END
+GO
+
+--exec PostCandidateDetails 23,101,'Bhavya Shree','12345678','bhavya123@gmail.com',1,'Attachment/cdrive',2,'c#,sql',1,1
+
+--select * from Candidate
+
