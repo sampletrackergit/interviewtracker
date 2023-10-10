@@ -1,0 +1,26 @@
+USE [InterviewTracker]
+GO
+/****** Object:  StoredProcedure [dbo].[GetCandidateStatus]    Script Date: 10/10/2023 8:48:21 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+Create PROCEDURE [dbo].[GetCandidateStatus]
+    @CandidateID INT
+AS
+BEGIN
+   SELECT Candidate.FullName, Candidate.ContactNumber, Candidate.EmailID, Candidate.IsInternal, Candidate.Resume, Candidate.YearsOfExperience, Candidate.PrimarySkills, CandidateStatus.Status, Candidate.IsShortlisted,
+        (SELECT COUNT(*) FROM InterviewSteps WHERE InterviewSteps.PositionId = Candidate.PositionID) AS TotalInterviewSteps,
+        (SELECT COUNT(*) FROM Interview WHERE Interview.PositionID = Candidate.PositionID AND Interview.InterviewStepID > 1) AS CompletedInterviewSteps,
+        (SELECT STRING_AGG(InterviewSteps.StepName, ', ') FROM InterviewSteps WHERE InterviewSteps.PositionId = Candidate.PositionID
+		AND InterviewSteps.InterviewStepID NOT IN (SELECT Interview.InterviewStepID FROM Interview
+		WHERE Interview.PositionID = Candidate.PositionID)) AS PendingInterviewSteps,
+		(SELECT STRING_AGG(InterviewSteps.StepName, ', ') FROM InterviewSteps
+		WHERE InterviewSteps.PositionId = Candidate.PositionID AND InterviewSteps.InterviewStepID IN
+		(SELECT Interview.InterviewStepID FROM Interview WHERE Interview.PositionID = Candidate.PositionID)) AS CompletedInterviewStepsNames
+    FROM
+	Candidate
+    INNER JOIN CandidateStatus ON Candidate.StatusID = CandidateStatus.StatusId
+    WHERE Candidate.CandidateID = @CandidateID
+END
+--EXEC GetCandidateStatus @CandidateID = 13457
