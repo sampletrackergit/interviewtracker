@@ -1,0 +1,29 @@
+ALTER PROCEDURE [dbo].[UpdatePositionStatus]
+    @PositionID INT
+AS
+BEGIN
+    DECLARE @PositionStatusID INT
+​
+    -- Get the PositionStatusID for the given PositionID
+    SELECT @PositionStatusID = PositionStatusID
+    FROM Position
+    WHERE PositionID = @PositionID
+​
+    -- Check if there are any candidates associated with the position with selected statuses
+    IF EXISTS (SELECT 1 FROM Candidate WHERE PositionID = @PositionID AND StatusID IN (3, 9, 11, 13, 15))
+    BEGIN
+        -- Update the PositionStatusID to closed if there are candidates associated with the position with any of the selected statuses
+        UPDATE Position
+        SET PositionStatusID = 2
+        WHERE PositionID = @PositionID
+    END
+    ELSE IF EXISTS (SELECT 1 FROM Candidate WHERE PositionID = @PositionID AND StatusID IN (2, 4, 6, 8, 10, 12, 14, 16))
+    BEGIN
+        -- Update the PositionStatusID to open if there are candidates associated with the position with any of the selected statuses
+        UPDATE Position
+        SET PositionStatusID = 1
+        WHERE PositionID = @PositionID
+    END
+END
+​
+--EXEC UpdatePositionStatus @PositionID = 101
